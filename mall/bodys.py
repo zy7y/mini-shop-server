@@ -21,5 +21,5 @@ class Total(GenericModel, Generic[D]):
 
 class Response(GenericModel, Generic[DataT]):
     data: Optional[DataT]
-    msg: str = "ok"
+    errmsg: str = "ok"
     code: int = 200

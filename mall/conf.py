@@ -71,6 +71,11 @@ class Settings(BaseSettings):
             path=f'/{values.get("RABBITMQ_VHOST")}'
         )
 
+    # 短信服务(容联云) https://doc.yuntongxun.com/pe/5f029ae7a80948a1006e776e
+    ACCOUNT_SID: str
+    ACCOUNT_TOKEN: str
+    APPID: str
+
     # 邮件服务
     EMAIL_USER: str
     EMAIL_SECRET: str
@@ -94,7 +99,7 @@ class Settings(BaseSettings):
 settings = Settings(_env_file='.development', _env_file_encoding='utf-8')
 
 
-# 迁移 aerich init -t fresh_mall.conf.TORTOISE_ORM
+# 迁移 aerich init -t mall.conf.TORTOISE_ORM
 TORTOISE_ORM = {
     "connections": {"default": settings.MYSQL_DATABASE_URL},
     "apps": {

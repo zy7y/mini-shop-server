@@ -1,9 +1,9 @@
 from .models import User
 from .bodys import Register
-from fresh_mall.bodys import Response
-from fresh_mall.security import get_password_hash
+from mall.bodys import Response
+from mall.security import get_password_hash
 
-from fresh_mall.tools import RedisManager
+from mall.tools import RedisManager
 
 # 获取一个redis 库 序号为0
 active_flag = RedisManager.get(0)
