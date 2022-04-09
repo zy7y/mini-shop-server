@@ -1,0 +1,25 @@
+from pydantic import BaseModel
+from typing import Generic, TypeVar, Optional, List
+
+from pydantic import BaseModel
+from pydantic.generics import GenericModel
+
+DataT = TypeVar('DataT')
+D = TypeVar('D')
+
+
+class BaseBody(BaseModel):
+
+    class Config:
+        anystr_strip_whitespace = True
+
+
+class Total(GenericModel, Generic[D]):
+    total: int
+    items: Optional[D]
+
+
+class Response(GenericModel, Generic[DataT]):
+    data: Optional[DataT]
+    msg: str = "ok"
+    code: int = 200
