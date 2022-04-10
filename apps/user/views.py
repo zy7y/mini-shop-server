@@ -112,20 +112,20 @@ async def github_auth_call(code: str):
         })
         github_token = result.json().get("access_token")
         # 获取当前认证的github 用户信息
-        user_info = requests.get("https://api.github.com/user", headers={
+        github_info = requests.get("https://api.github.com/user", headers={
             "Authorization": f"token {github_token}"
         }).json()
     except Exception as e:
         return Response(code=400, errmsg=str(e))
 
-    user_obj = await OAuthGithub.get_or_none(openid=user_info["id"])
+    user_obj = await OAuthGithub.get_or_none(openid=github_info.get("id"))
     # 用户存在直接登录
     if user_obj is not None:
         user = await user_obj.user
     else:
         # 用户不存在, 则注册密码默认 m123456
-        user = await User.create(username=user_info["login"], password=get_password_hash("m123456"), email="", mobile="")
-        await OAuthGithub.create(openid=user_info["id"], user=user)
+        user = await User.create(username=github_info.get("login"), password=get_password_hash("m123456"), email="", mobile="")
+        await OAuthGithub.create(openid=github_info.get("id"), user=user)
 
     data = Token(access_token=create_access_token(username=user.username))
     return Response(data=data)
