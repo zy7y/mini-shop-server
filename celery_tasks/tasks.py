@@ -6,8 +6,8 @@ from mall.conf import settings
 
 
 @celery_app.task
-def sms_code(mobile: str, captcha: str, minute: int, tid: str = '1'):
-    """ celery 装饰 异步
+def sms_code(mobile: str, captcha: str, minute: int, tid: str = "1"):
+    """celery 装饰 异步
     发送短信验证码
     :param mobile: 发送手机号，多个手机号使用 , 分割
     :param captcha: 验证码
@@ -20,14 +20,21 @@ def sms_code(mobile: str, captcha: str, minute: int, tid: str = '1'):
 
 @celery_app.task
 def async_send_email(to: str, href: str):
-    """ 异步 发送邮件
+    """异步 发送邮件
     :param to: 收件人
     :param href: 激活链接
     """
     # https://blog.csdn.net/weixin_38428827/article/details/104223207
-    with SMTP(user=settings.EMAIL_USER,
-              password=settings.EMAIL_SECRET, host=settings.EMAIL_SMTP_HOST) as y:
-        y.send(to, '邮箱验证', contents=f"""
+    with SMTP(
+        user=settings.EMAIL_USER,
+        password=settings.EMAIL_SECRET,
+        host=settings.EMAIL_SMTP_HOST,
+    ) as y:
+        y.send(
+            to,
+            "邮箱验证",
+            contents=f"""
         <p> 邮箱: {to}</p>
         <p><a href={href}>👇me</a></p>
-        """)
+        """,
+        )

@@ -1,6 +1,7 @@
 # 入参模型定义
 
 from pydantic import EmailStr, Field
+
 from mall.bodys import BaseBody
 
 

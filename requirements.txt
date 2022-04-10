@@ -41,7 +41,6 @@ nodeenv==1.6.0
 passlib==1.7.4
 Pillow==8.4.0
 platformdirs==2.5.1
-pre-commit==2.18.1
 premailer==3.10.0
 prompt-toolkit==3.0.29
 py3Fdfs==2.2.0

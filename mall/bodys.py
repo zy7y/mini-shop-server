@@ -1,15 +1,13 @@
-from pydantic import BaseModel
-from typing import Generic, TypeVar, Optional, List
+from typing import Generic, List, Optional, TypeVar
 
 from pydantic import BaseModel
 from pydantic.generics import GenericModel
 
-DataT = TypeVar('DataT')
-D = TypeVar('D')
+DataT = TypeVar("DataT")
+D = TypeVar("D")
 
 
 class BaseBody(BaseModel):
-
     class Config:
         anystr_strip_whitespace = True
 

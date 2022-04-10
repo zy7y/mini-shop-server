@@ -1,19 +1,19 @@
-
 import requests
 from fastapi import Path
-from simpel_captcha import img_captcha, captcha
+from simpel_captcha import captcha, img_captcha
 from starlette.responses import StreamingResponse
 from tortoise.expressions import Q
 
-from mall.conf import settings
-from .models import User, OAuthGithub
-from .bodys import Register, UserAuth
-from mall.bodys import Response, Token
-from mall.security import get_password_hash, create_access_token, verify_password
-from mall.tools import img_code_redis, sms_code_redis
 from celery_tasks.tasks import sms_code
+from mall.bodys import Response, Token
+from mall.conf import settings
+from mall.security import create_access_token, get_password_hash, verify_password
+from mall.tools import img_code_redis, sms_code_redis
 
-mobile_regx = r'^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$'
+from .bodys import Register, UserAuth
+from .models import OAuthGithub, User
+
+mobile_regx = r"^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$"
 
 
 async def image_captcha(uuid: str):
@@ -21,21 +21,23 @@ async def image_captcha(uuid: str):
     img, text = img_captcha(byte_stream=True)
     # 缓存redis 验证码过期时间100s
     await img_code_redis.setex(uuid, 100, text)
-    return StreamingResponse(img, media_type='image/jpeg')
+    return StreamingResponse(img, media_type="image/jpeg")
 
 
-async def sms_captcha(mobile: str = Path(..., regex=mobile_regx), *, img_code: str, uuid: str):
+async def sms_captcha(
+    mobile: str = Path(..., regex=mobile_regx), *, img_code: str, uuid: str
+):
     """发短信验证码"""
     redis_value = await img_code_redis.get(uuid)
     # 删除图片验证码
     await img_code_redis.delete(uuid)
 
     if redis_value != img_code:
-        return Response(code=400, errmsg='图片验证码错误')
+        return Response(code=400, errmsg="图片验证码错误")
 
     # 是否60秒内已发送
     if await sms_code_redis.get(f"flag_{mobile}"):
-        return Response(code=400, errmsg='频繁发送短信验证码')
+        return Response(code=400, errmsg="频繁发送短信验证码")
 
     text = captcha(6)
 
@@ -43,11 +45,11 @@ async def sms_captcha(mobile: str = Path(..., regex=mobile_regx), *, img_code: s
     async with sms_code_redis.pipeline(transaction=True) as pipe:
         save_time = 300  # s
         # 保存手机号和验证码
-        await (pipe.setex(mobile, save_time, text)
-               # 标记发送 60s 失效
-               .setex(f"flag_{mobile}", 60, 1)
-               .execute()
-               )
+        await (
+            pipe.setex(mobile, save_time, text)
+            # 标记发送 60s 失效
+            .setex(f"flag_{mobile}", 60, 1).execute()
+        )
 
     sms_code.delay(mobile, text, save_time / 60)
     return Response(data={"code": text})
@@ -84,12 +86,14 @@ async def register(user: Register):
 
 async def auth(user: UserAuth):
     """多账号登录"""
-    user_obj = await User.get_or_none(Q(username=user.username) | Q(mobile=user.username))
+    user_obj = await User.get_or_none(
+        Q(username=user.username) | Q(mobile=user.username)
+    )
     if user_obj is not None:
         if verify_password(user.password, user_obj.password):
             data = Token(access_token=create_access_token(username=user.username))
             return Response(data=data)
-    return Response(code=400, errmsg='账号或密码错误')
+    return Response(code=400, errmsg="账号或密码错误")
 
 
 # http://127.0.0.1:8000/oauth/redirect github oauth 回调地址
@@ -105,16 +109,17 @@ async def github_auth_call(code: str):
         data = {
             "client_id": settings.CLIENT_ID,
             "client_secret": settings.CLIENT_SECRET,
-            "code": code
+            "code": code,
         }
-        result = requests.post(url=github_token_url, json=data, headers={
-            "Accept": "application/json"
-        })
+        result = requests.post(
+            url=github_token_url, json=data, headers={"Accept": "application/json"}
+        )
         github_token = result.json().get("access_token")
         # 获取当前认证的github 用户信息
-        github_info = requests.get("https://api.github.com/user", headers={
-            "Authorization": f"token {github_token}"
-        }).json()
+        github_info = requests.get(
+            "https://api.github.com/user",
+            headers={"Authorization": f"token {github_token}"},
+        ).json()
     except Exception as e:
         return Response(code=400, errmsg=str(e))
 
@@ -124,7 +129,12 @@ async def github_auth_call(code: str):
         user = await user_obj.user
     else:
         # 用户不存在, 则注册密码默认 m123456
-        user = await User.create(username=github_info.get("login"), password=get_password_hash("m123456"), email="", mobile="")
+        user = await User.create(
+            username=github_info.get("login"),
+            password=get_password_hash("m123456"),
+            email="",
+            mobile="",
+        )
         await OAuthGithub.create(openid=github_info.get("id"), user=user)
 
     data = Token(access_token=create_access_token(username=user.username))

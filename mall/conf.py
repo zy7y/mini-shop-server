@@ -1,11 +1,11 @@
 import secrets
-from typing import Optional, Dict, Any, List, Union
+from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseSettings, RedisDsn, AnyUrl, validator, AmqpDsn
+from pydantic import AmqpDsn, AnyUrl, BaseSettings, RedisDsn, validator
 
 
 class MysqlDsn(AnyUrl):
-    allowed_schemes = {'mysql'}
+    allowed_schemes = {"mysql"}
     user_required = True
 
 
@@ -42,10 +42,7 @@ class Settings(BaseSettings):
     def assemble_redis_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
-        return RedisDsn.build(
-            scheme="redis",
-            host=values.get("REDIS_ADDRESS")
-        )
+        return RedisDsn.build(scheme="redis", host=values.get("REDIS_ADDRESS"))
 
     # rabbitMQ
     RABBITMQ_ADDRESS: str
@@ -56,7 +53,9 @@ class Settings(BaseSettings):
     RABBITMQ_URL: Optional[AmqpDsn] = None
 
     @validator("RABBITMQ_URL", pre=True)
-    def assemble_rabbitmq_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+    def assemble_rabbitmq_connection(
+        cls, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:
         if isinstance(v, str):
             return v
         return AmqpDsn.build(
@@ -64,7 +63,7 @@ class Settings(BaseSettings):
             host=values.get("RABBITMQ_ADDRESS"),
             user=values.get("RABBITMQ_USER"),
             password=values.get("RABBITMQ_PASSWORD"),
-            path=f'/{values.get("RABBITMQ_VHOST")}'
+            path=f'/{values.get("RABBITMQ_VHOST")}',
         )
 
     # 短信服务(容联云) https://doc.yuntongxun.com/pe/5f029ae7a80948a1006e776e
@@ -75,7 +74,7 @@ class Settings(BaseSettings):
     # 邮件服务
     EMAIL_USER: str
     EMAIL_SECRET: str
-    EMAIL_SMTP_HOST: str = 'smtp.163.com'
+    EMAIL_SMTP_HOST: str = "smtp.163.com"
 
     # FastDFS
     TRACKER_ADDRESS: Union[str, Dict[str, Any]]
@@ -83,7 +82,12 @@ class Settings(BaseSettings):
     @validator("TRACKER_ADDRESS", pre=True)
     def dfs_build_cnf(cls, v: str) -> Dict[str, Any]:
         host, port = v.split(":")
-        return {'host_tuple': (host,), 'port': port, 'timeout': 30, 'name': 'Tracker Pool'}
+        return {
+            "host_tuple": (host,),
+            "port": port,
+            "timeout": 30,
+            "name": "Tracker Pool",
+        }
 
     # Github Oauth https://blog.csdn.net/jiang_huixin/article/details/109689814
     CLIENT_ID: str
@@ -94,7 +98,7 @@ class Settings(BaseSettings):
     GITHUB_OAUTH_PAGE: Optional[str]
 
     @validator("GITHUB_OAUTH_PAGE", pre=True)
-    def redirect_github_auth_page(cls, v: Optional[str],  values: Dict[str, Any]) -> str:
+    def redirect_github_auth_page(cls, v: Optional[str], values: Dict[str, Any]) -> str:
         """返回完整的 Github Oauth 重定向地址"""
         if v is None:
             return f"""https://github.com/login/oauth/authorize?client_id={values.get("CLIENT_ID")}&redirect_uri={values.get("REDIRECT_URI")}"""
@@ -107,7 +111,7 @@ class Settings(BaseSettings):
         case_sensitive = True
 
 
-settings = Settings(_env_file='.development', _env_file_encoding='utf-8')
+settings = Settings(_env_file=".development", _env_file_encoding="utf-8")
 
 
 # 迁移 aerich init -t mall.conf.TORTOISE_ORM
@@ -118,5 +122,5 @@ TORTOISE_ORM = {
             "models": settings.APP_MODELS,
             "default_connection": "default",
         },
-    }
+    },
 }
