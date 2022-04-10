@@ -85,6 +85,21 @@ class Settings(BaseSettings):
         host, port = v.split(":")
         return {'host_tuple': (host,), 'port': port, 'timeout': 30, 'name': 'Tracker Pool'}
 
+    # Github Oauth https://blog.csdn.net/jiang_huixin/article/details/109689814
+    CLIENT_ID: str
+    CLIENT_SECRET: str
+    # Github 认证回调 处理的路由地址
+    REDIRECT_URI: str
+
+    GITHUB_OAUTH_PAGE: Optional[str]
+
+    @validator("GITHUB_OAUTH_PAGE", pre=True)
+    def redirect_github_auth_page(cls, v: Optional[str],  values: Dict[str, Any]) -> str:
+        """返回完整的 Github Oauth 重定向地址"""
+        if v is None:
+            return f"""https://github.com/login/oauth/authorize?client_id={values.get("CLIENT_ID")}&redirect_uri={values.get("REDIRECT_URI")}"""
+        return v
+
     # 待迁移的 模型类
     APP_MODELS: Optional[List[str]] = ["apps.user.models", "aerich.models"]
 

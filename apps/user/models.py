@@ -12,3 +12,10 @@ class User(BaseModel):
     class Meta:
         table = "m_user"
 
+
+class OAuthGithub(BaseModel):
+    user = fields.ForeignKeyField("models.User", on_delete=fields.CASCADE)
+    openid = fields.CharField(max_length=64, description="用户OpenID", index=True)
+
+    class Meta:
+        table = "m_oauth_github"

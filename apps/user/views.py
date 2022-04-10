@@ -1,9 +1,12 @@
+
+import requests
 from fastapi import Path
 from simpel_captcha import img_captcha, captcha
 from starlette.responses import StreamingResponse
 from tortoise.expressions import Q
 
-from .models import User
+from mall.conf import settings
+from .models import User, OAuthGithub
 from .bodys import Register, UserAuth
 from mall.bodys import Response, Token
 from mall.security import get_password_hash, create_access_token, verify_password
@@ -81,7 +84,6 @@ async def register(user: Register):
 
 async def auth(user: UserAuth):
     """多账号登录"""
-
     user_obj = await User.get_or_none(Q(username=user.username) | Q(mobile=user.username))
     if user_obj is not None:
         if verify_password(user.password, user_obj.password):
@@ -89,3 +91,41 @@ async def auth(user: UserAuth):
             return Response(data=data)
     return Response(code=400, errmsg='账号或密码错误')
 
+
+# http://127.0.0.1:8000/oauth/redirect github oauth 回调地址
+def github_auth():
+    """github 授权"""
+    return settings.GITHUB_OAUTH_PAGE
+
+
+async def github_auth_call(code: str):
+    """github 授权的回调，实际业务操作"""
+    try:
+        github_token_url = "https://github.com/login/oauth/access_token"
+        data = {
+            "client_id": settings.CLIENT_ID,
+            "client_secret": settings.CLIENT_SECRET,
+            "code": code
+        }
+        result = requests.post(url=github_token_url, json=data, headers={
+            "Accept": "application/json"
+        })
+        github_token = result.json().get("access_token")
+        # 获取当前认证的github 用户信息
+        user_info = requests.get("https://api.github.com/user", headers={
+            "Authorization": f"token {github_token}"
+        }).json()
+    except Exception as e:
+        return Response(code=400, errmsg=str(e))
+
+    user_obj = await OAuthGithub.get_or_none(openid=user_info["id"])
+    # 用户存在直接登录
+    if user_obj is not None:
+        user = await user_obj.user
+    else:
+        # 用户不存在, 则注册密码默认 m123456
+        user = await User.create(username=user_info["login"], password=get_password_hash("m123456"), email="", mobile="")
+        await OAuthGithub.create(openid=user_info["id"], user=user)
+
+    data = Token(access_token=create_access_token(username=user.username))
+    return Response(data=data)
