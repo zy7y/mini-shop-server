@@ -1,6 +1,6 @@
 # 入参模型定义
 
-from pydantic import EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field
 
 from mall.bodys import BaseBody
 
@@ -20,3 +20,15 @@ class Register(UserBodyBase):
 
 class UserAuth(UserBodyBase):
     remembered: bool = Field(True, description="是否记住")
+
+
+class UserInfo(BaseModel):
+    id: int
+    username: str
+    mobile: str
+    email: str
+    is_active: str = Field(..., description="邮箱是否激活")
+
+
+class EmailBody(BaseModel):
+    email: EmailStr = Field(..., description="邮箱")

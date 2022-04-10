@@ -1,5 +1,5 @@
 import requests
-from fastapi import Path
+from fastapi import Depends, Path
 from simpel_captcha import captcha, img_captcha
 from starlette.responses import StreamingResponse
 from tortoise.expressions import Q
@@ -7,10 +7,15 @@ from tortoise.expressions import Q
 from celery_tasks.tasks import sms_code
 from mall.bodys import Response, Token
 from mall.conf import settings
-from mall.security import create_access_token, get_password_hash, verify_password
+from mall.security import (
+    check_token_http,
+    create_access_token,
+    get_password_hash,
+    verify_password,
+)
 from mall.tools import img_code_redis, sms_code_redis
 
-from .bodys import Register, UserAuth
+from .bodys import EmailBody, Register, UserAuth, UserInfo
 from .models import OAuthGithub, User
 
 mobile_regx = r"^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$"
@@ -139,3 +144,23 @@ async def github_auth_call(code: str):
 
     data = Token(access_token=create_access_token(username=user.username))
     return Response(data=data)
+
+
+async def user_info(user: User = Depends(check_token_http)):
+    """获取当前用户信息"""
+    data = UserInfo(
+        id=user.pk,
+        username=user.username,
+        mobile=user.mobile,
+        email=user.email,
+        is_active=user.is_active,
+    )
+    return Response(data=data)
+
+
+async def update_email(
+    email_body: EmailBody, *, user: User = Depends(check_token_http)
+):
+    """修改邮箱"""
+    await user.filter(Q(id=user.pk), Q(is_delete=False)).update(email=email_body.email)
+    return Response()
