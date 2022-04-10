@@ -19,6 +19,11 @@ class Total(GenericModel, Generic[D]):
     items: Optional[D]
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "Bearer"
+
+
 class Response(GenericModel, Generic[DataT]):
     data: Optional[DataT]
     errmsg: str = "ok"

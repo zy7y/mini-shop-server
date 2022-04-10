@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+ # fastdfs 默认80 端口访问可下载 需要在linux搭建
+#  fastdfs:
+#    image: qbanxiaoli/fastdfs
+#    restart: always
+#    container_name: fastdfs
+#    environment:
+#      # 需要更换成自己的服务器IP
+#      - IP=192.168.0.111
+#    volumes:
+#      - ./fastdfs:/var/local
+#    network_mode: host
+
+  mysql:
+    image: "mysql:8.0.27"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      TZ: Asia/Shanghai # 指定时区
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql8:/var/lib/mysql
+
+  redis:
+    image: "redis:6.2.6-alpine3.15"
+    restart: always
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: "rabbitmq:3.9.11-management-alpine"
+    restart: always
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+
+

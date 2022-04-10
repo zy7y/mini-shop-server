@@ -1,16 +1,12 @@
 import secrets
 from typing import Optional, Dict, Any, List, Union
 
-from pydantic import BaseSettings, RedisDsn, AnyUrl, validator
+from pydantic import BaseSettings, RedisDsn, AnyUrl, validator, AmqpDsn
 
 
 class MysqlDsn(AnyUrl):
     allowed_schemes = {'mysql'}
     user_required = True
-
-
-class RabbitMQDsn(AnyUrl):
-    allowed_schemes = {'amqp'}
 
 
 class Settings(BaseSettings):
@@ -57,13 +53,13 @@ class Settings(BaseSettings):
     RABBITMQ_PASSWORD: str
     RABBITMQ_VHOST: str
 
-    RABBITMQ_URL: Optional[RabbitMQDsn] = None
+    RABBITMQ_URL: Optional[AmqpDsn] = None
 
     @validator("RABBITMQ_URL", pre=True)
     def assemble_rabbitmq_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         if isinstance(v, str):
             return v
-        return RabbitMQDsn.build(
+        return AmqpDsn.build(
             scheme="amqp",
             host=values.get("RABBITMQ_ADDRESS"),
             user=values.get("RABBITMQ_USER"),
@@ -90,7 +86,7 @@ class Settings(BaseSettings):
         return {'host_tuple': (host,), 'port': port, 'timeout': 30, 'name': 'Tracker Pool'}
 
     # 待迁移的 模型类
-    APP_MODELS: Optional[List[str]] = ["apps.user.models", "apps.goods.models", "apps.order.models", "aerich.models"]
+    APP_MODELS: Optional[List[str]] = ["apps.user.models", "aerich.models"]
 
     class Config:
         case_sensitive = True
