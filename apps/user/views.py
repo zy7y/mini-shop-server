@@ -1,11 +1,12 @@
 from fastapi import Path
 from simpel_captcha import img_captcha, captcha
 from starlette.responses import StreamingResponse
+from tortoise.expressions import Q
 
 from .models import User
-from .bodys import Register
+from .bodys import Register, UserAuth
 from mall.bodys import Response, Token
-from mall.security import get_password_hash, create_access_token
+from mall.security import get_password_hash, create_access_token, verify_password
 from mall.tools import img_code_redis, sms_code_redis
 from celery_tasks.tasks import sms_code
 
@@ -76,3 +77,15 @@ async def register(user: Register):
     await User.create(**user.dict())
     data = Token(access_token=create_access_token(username=user.username))
     return Response(data=data)
+
+
+async def auth(user: UserAuth):
+    """多账号登录"""
+
+    user_obj = await User.get_or_none(Q(username=user.username) | Q(mobile=user.username))
+    if user_obj is not None:
+        if verify_password(user.password, user_obj.password):
+            data = Token(access_token=create_access_token(username=user.username))
+            return Response(data=data)
+    return Response(code=400, errmsg='账号或密码错误')
+
