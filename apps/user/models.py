@@ -1,4 +1,4 @@
-from fresh_mall.model import BaseModel, fields, models
+from mall.model import BaseModel, fields, models
 
 
 class User(BaseModel):

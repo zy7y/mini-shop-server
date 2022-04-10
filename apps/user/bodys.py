@@ -1,7 +1,7 @@
 # 入参模型定义
 
 from pydantic import EmailStr, Field
-from fresh_mall.bodys import BaseBody
+from mall.bodys import BaseBody
 
 
 class Register(BaseBody):

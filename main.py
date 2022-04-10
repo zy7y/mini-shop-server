@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from fresh_mall.exceptions import exception_handlers
-from fresh_mall.urls import urlpatterns
-from fresh_mall.conf import settings
+from mall.exceptions import exception_handlers
+from mall.urls import urlpatterns
+from mall.conf import settings
 
 from tortoise import Tortoise
 
