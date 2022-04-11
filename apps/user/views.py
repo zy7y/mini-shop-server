@@ -4,15 +4,11 @@ from simpel_captcha import captcha, img_captcha
 from starlette.responses import StreamingResponse
 from tortoise.expressions import Q
 
-from celery_tasks.tasks import sms_code
+from celery_tasks.tasks import async_send_email, sms_code
 from mall.bodys import Response, Token
 from mall.conf import settings
-from mall.security import (
-    check_token_http,
-    create_access_token,
-    get_password_hash,
-    verify_password,
-)
+from mall.security import (check_token, check_token_http, create_access_token,
+                           get_password_hash, verify_password)
 from mall.tools import img_code_redis, sms_code_redis
 
 from .bodys import EmailBody, Register, UserAuth, UserInfo
@@ -77,7 +73,12 @@ async def register(user: Register):
     await sms_code_redis.delete(user.mobile)
 
     # 验证账号是否存在
-    if await User.get_or_none(username=user.username) is not None:
+    if (
+        await User.get_or_none(
+            Q(username=user.username) | Q(mobile=user.mobile) | Q(email=user.email)
+        )
+        is not None
+    ):
         return Response(code=400, errmsg="用户已注册")
 
     user.password = get_password_hash(user.password)
@@ -162,5 +163,27 @@ async def update_email(
     email_body: EmailBody, *, user: User = Depends(check_token_http)
 ):
     """修改邮箱"""
-    await user.filter(Q(id=user.pk), Q(is_delete=False)).update(email=email_body.email)
-    return Response()
+    if user.email == email_body.email:
+        return Response(code=400, errmsg="修改无效")
+
+    result = await user.filter(Q(id=user.pk), Q(is_delete=False)).update(
+        email=email_body.email
+    )
+    if result:
+        href = f"http://127.0.0.1:8000/emails/verification?token={create_access_token(user.username)}"
+        async_send_email.delay(email_body.email, href)
+        return Response()
+    return Response(code=400, errmsg="账号已删除")
+
+
+async def verify_email(token: str):
+    """激活邮箱"""
+    if user := await check_token(token):
+        if user.is_active:
+            return Response(code=400, errmsg="无需重新激活")
+        result = await user.filter(
+            Q(id=user.pk), Q(is_delete=False), ~Q(email="")
+        ).update(is_active=True)
+        if result:
+            return Response()
+    return Response(code=400, errmsg="账号有误,请联系管理员")

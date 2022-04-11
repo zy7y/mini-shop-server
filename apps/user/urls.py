@@ -4,16 +4,9 @@ from fastapi.routing import APIRoute
 from mall.bodys import Response, Token
 
 from .bodys import UserInfo
-from .views import (
-    auth,
-    github_auth,
-    github_auth_call,
-    image_captcha,
-    register,
-    sms_captcha,
-    update_email,
-    user_info,
-)
+from .views import (auth, github_auth, github_auth_call, image_captcha,
+                    register, sms_captcha, update_email, user_info,
+                    verify_email)
 
 urlpatterns = [
     APIRoute(
@@ -69,6 +62,19 @@ urlpatterns = [
         tags=["用户中心"],
     ),
     APIRoute(
-        "/emails", update_email, summary="修改邮箱", response_model=Response, tags=["用户中心"]
+        "/emails",
+        update_email,
+        methods=["put"],
+        summary="修改邮箱",
+        response_model=Response,
+        tags=["用户中心"],
+    ),
+    APIRoute(
+        "/emails/verification",
+        verify_email,
+        methods=["get"],
+        summary="激活邮箱",
+        response_model=Response,
+        tags=["用户中心"],
     ),
 ]

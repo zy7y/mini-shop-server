@@ -30,11 +30,14 @@ def async_send_email(to: str, href: str):
         password=settings.EMAIL_SECRET,
         host=settings.EMAIL_SMTP_HOST,
     ) as y:
+
         y.send(
             to,
-            "邮箱验证",
+            "美多商城邮箱验证",
             contents=f"""
-        <p> 邮箱: {to}</p>
-        <p><a href={href}>👇me</a></p>
+        <p>尊敬的用户您好！</p>
+        <p>感谢您使用美多商城。</p>
+        <p>您的邮箱为：{to} 。请点击此链接激活您的邮箱：</p>
+        '<p><a href="{href}">{href}<a></p>'
         """,
         )
