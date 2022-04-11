@@ -23,3 +23,6 @@ RedisManager: Dict[int, Redis] = {
 # 验证码使用的 redis库
 img_code_redis = RedisManager.get(0)
 sms_code_redis = RedisManager.get(1)
+
+# 省市区使用的 redis
+area_redis = RedisManager.get(2)

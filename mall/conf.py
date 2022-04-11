@@ -105,7 +105,11 @@ class Settings(BaseSettings):
         return v
 
     # 待迁移的 模型类
-    APP_MODELS: Optional[List[str]] = ["apps.user.models", "apps.areas.models", "aerich.models"]
+    APP_MODELS: Optional[List[str]] = [
+        "apps.user.models",
+        "apps.areas.models",
+        "aerich.models",
+    ]
 
     class Config:
         case_sensitive = True

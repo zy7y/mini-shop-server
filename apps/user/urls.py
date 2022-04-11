@@ -2,9 +2,17 @@ from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.routing import APIRoute
 
 from apps.user.bodys import UserInfo
-from apps.user.views import (auth, github_auth, github_auth_call,
-                             image_captcha, register, sms_captcha,
-                             update_email, user_info, verify_email)
+from apps.user.views import (
+    auth,
+    github_auth,
+    github_auth_call,
+    image_captcha,
+    register,
+    sms_captcha,
+    update_email,
+    user_info,
+    verify_email,
+)
 from mall.bodys import Response, Token
 
 urlpatterns = [
