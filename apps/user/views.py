@@ -4,15 +4,14 @@ from simpel_captcha import captcha, img_captcha
 from starlette.responses import StreamingResponse
 from tortoise.expressions import Q
 
+from apps.user.bodys import EmailBody, Register, UserAuth, UserInfo
+from apps.user.models import OAuthGithub, User
 from celery_tasks.tasks import async_send_email, sms_code
-from mall.bodys import Response, Token
+from mall.bodys import Response
 from mall.conf import settings
 from mall.security import (check_token, check_token_http, create_access_token,
                            get_password_hash, verify_password)
 from mall.tools import img_code_redis, sms_code_redis
-
-from .bodys import EmailBody, Register, UserAuth, UserInfo
-from .models import OAuthGithub, User
 
 mobile_regx = r"^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$"
 
@@ -86,8 +85,7 @@ async def register(user: Register):
     delattr(user, "sure_password")
     delattr(user, "sms_code")
     await User.create(**user.dict())
-    data = Token(access_token=create_access_token(username=user.username))
-    return Response(data=data)
+    return Response(data={"access_token": create_access_token(username=user.username)})
 
 
 async def auth(user: UserAuth):
@@ -97,8 +95,9 @@ async def auth(user: UserAuth):
     )
     if user_obj is not None:
         if verify_password(user.password, user_obj.password):
-            data = Token(access_token=create_access_token(username=user.username))
-            return Response(data=data)
+            return Response(
+                data={"access_token": create_access_token(username=user.username)}
+            )
     return Response(code=400, errmsg="账号或密码错误")
 
 
@@ -143,8 +142,7 @@ async def github_auth_call(code: str):
         )
         await OAuthGithub.create(openid=github_info.get("id"), user=user)
 
-    data = Token(access_token=create_access_token(username=user.username))
-    return Response(data=data)
+    return Response(data={"access_token": create_access_token(username=user.username)})
 
 
 async def user_info(user: User = Depends(check_token_http)):
