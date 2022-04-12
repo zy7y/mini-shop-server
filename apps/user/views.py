@@ -8,7 +8,8 @@ from tortoise.fields.relational import _NoneAwaitable
 
 from apps.areas.models import Area
 from apps.user.bodys import (AddressCreate, AddressTitle, AddressUpdate,
-                             EmailBody, Register, UserAuth, UserInfo)
+                             EmailBody, PasswordUpdate, Register, UserAuth,
+                             UserInfo)
 from apps.user.models import Address, OAuthGithub, User
 from celery_tasks.tasks import async_send_email, sms_code
 from mall.bodys import Response
@@ -320,3 +321,20 @@ async def update_title_address(
         await address.save()
         return Response()
     return Response(code=400, errmsg="设置地址标题失败")
+
+
+async def update_password(
+    password_body: PasswordUpdate, user: User = Depends(check_token_http)
+):
+    if password_body.old_password == password_body.new_password:
+        return Response(code=400, errmsg="新老密码不能一致")
+
+    if password_body.new_password != password_body.sure_password:
+        return Response(code=400, errmsg="两次密码不一致")
+
+    if not verify_password(password_body.old_password, user.password):
+        return Response(code=400, errmsg="原始密码错误")
+
+    user.password = get_password_hash(password_body.new_password)
+    await user.save()
+    return Response()

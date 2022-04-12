@@ -8,7 +8,8 @@ from apps.user.views import (address_list, auth, create_address,
                              default_address, del_address, github_auth,
                              github_auth_call, image_captcha, register,
                              sms_captcha, update_address, update_email,
-                             update_title_address, user_info, verify_email)
+                             update_password, update_title_address, user_info,
+                             verify_email)
 from mall.bodys import Response, Token
 
 urlpatterns = [
@@ -124,6 +125,14 @@ urlpatterns = [
         update_title_address,
         methods=["put"],
         summary="设置地址标题",
+        response_model=Response,
+        tags=["用户中心"],
+    ),
+    APIRoute(
+        "/password",
+        update_password,
+        methods=["put"],
+        summary="修改密码",
         response_model=Response,
         tags=["用户中心"],
     ),

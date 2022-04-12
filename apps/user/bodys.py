@@ -61,10 +61,16 @@ class AddressInfo(AddressBase, AddressTitle):
     """展示地址信息"""
 
     id: int
-    province: str
-    city: str
-    district: str
+    province: str = Field(..., description="省")
+    city: str = Field(..., description="市")
+    district: str = Field(..., description="区")
 
 
 class AddressUpdate(AddressCreate):
     pass
+
+
+class PasswordUpdate(BaseBody):
+    old_password: str = Field(..., description="老密码", min_length=6)
+    new_password: str = Field(..., description="新密码", min_length=6)
+    sure_password: str = Field(..., description="确认密码", min_length=6)
