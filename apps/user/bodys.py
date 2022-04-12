@@ -1,4 +1,5 @@
 # 入参模型定义
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -32,3 +33,38 @@ class UserInfo(BaseModel):
 
 class EmailBody(BaseModel):
     email: EmailStr = Field(..., description="邮箱")
+
+
+class AddressBase(BaseBody):
+    receiver: str = Field(..., description="收货人")
+    place: str = Field(..., description="收货地址")
+    mobile: str = Field(..., regex=r"1[3-9]\d{9}$", description="手机号")
+    tel: Optional[str] = Field(
+        None,
+        regex=r"^(0[0-9]{2,3}-)?([2-9][0-9]{6,7})+(-[0-9]{1,4})?$",
+        description="固定电话",
+    )
+    email: Optional[EmailStr] = Field(None, description="邮箱")
+
+
+class AddressCreate(AddressBase):
+    province_id: int = Field(..., description="省份ID")
+    city_id: int = Field(..., description="城市ID")
+    district_id: int = Field(..., description="区县ID")
+
+
+class AddressTitle(BaseBody):
+    title: str
+
+
+class AddressInfo(AddressBase, AddressTitle):
+    """展示地址信息"""
+
+    id: int
+    province: str
+    city: str
+    district: str
+
+
+class AddressUpdate(AddressCreate):
+    pass

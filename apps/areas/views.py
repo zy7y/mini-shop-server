@@ -36,7 +36,7 @@ async def get_sub_areas(pk: int):
     if current is not None:
         data = {
             **jsonable_encoder(current),
-            "subs": jsonable_encoder(await current.filter(parent=current).all()),
+            "subs": jsonable_encoder(await Area.filter(parent=current).all()),
         }
         await area_redis.setex(cache_key, 15 * 60, json.dumps(data))
         return Response(data=data)

@@ -12,11 +12,13 @@ urlpatterns = [
         get_provinces,
         summary="获取省数据",
         response_model=Response[List[AreaProvince]],
+        tags=["公共服务"],
     ),
     APIRoute(
         "/areas/{id}",
         get_sub_areas,
         summary="获取市/区数据",
         response_model=Response[AreasInfo],
+        tags=["公共服务"],
     ),
 ]

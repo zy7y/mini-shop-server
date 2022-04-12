@@ -1,18 +1,14 @@
+from typing import List
+
 from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.routing import APIRoute
 
-from apps.user.bodys import UserInfo
-from apps.user.views import (
-    auth,
-    github_auth,
-    github_auth_call,
-    image_captcha,
-    register,
-    sms_captcha,
-    update_email,
-    user_info,
-    verify_email,
-)
+from apps.user.bodys import AddressInfo, UserInfo
+from apps.user.views import (address_list, auth, create_address,
+                             default_address, del_address, github_auth,
+                             github_auth_call, image_captcha, register,
+                             sms_captcha, update_address, update_email,
+                             update_title_address, user_info, verify_email)
 from mall.bodys import Response, Token
 
 urlpatterns = [
@@ -81,6 +77,53 @@ urlpatterns = [
         verify_email,
         methods=["get"],
         summary="激活邮箱",
+        response_model=Response,
+        tags=["用户中心"],
+    ),
+    APIRoute(
+        "/addresses/create",
+        create_address,
+        methods=["post"],
+        summary="新增地址",
+        response_model=Response[AddressInfo],
+        tags=["用户中心"],
+    ),
+    APIRoute(
+        "/addresses",
+        address_list,
+        summary="地址列表",
+        response_model=Response[List[AddressInfo]],
+        tags=["用户中心"],
+    ),
+    APIRoute(
+        "/addresses/{pk}",
+        update_address,
+        methods=["put"],
+        summary="修改地址",
+        response_model=Response[AddressInfo],
+        tags=["用户中心"],
+    ),
+    APIRoute(
+        "/addresses/{pk}",
+        del_address,
+        methods=["delete"],
+        summary="删除地址",
+        response_model=Response,
+        tags=["用户中心"],
+    ),
+    APIRoute(
+        "/addresses/{pk}/default",
+        default_address,
+        methods=["put"],
+        summary="设置默认地址",
+        response_model=Response,
+        tags=["用户中心"],
+    ),
+    APIRoute(
+        "/addresses/{pk}/title",
+        update_title_address,
+        methods=["put"],
+        summary="设置地址标题",
         response_model=Response,
         tags=["用户中心"],
     ),

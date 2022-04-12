@@ -1,21 +1,20 @@
 import requests
 from fastapi import Depends, Path
+from fastapi.encoders import jsonable_encoder
 from simpel_captcha import captcha, img_captcha
 from starlette.responses import StreamingResponse
 from tortoise.expressions import Q
+from tortoise.fields.relational import _NoneAwaitable
 
-from apps.user.bodys import EmailBody, Register, UserAuth, UserInfo
-from apps.user.models import OAuthGithub, User
+from apps.areas.models import Area
+from apps.user.bodys import (AddressCreate, AddressTitle, AddressUpdate,
+                             EmailBody, Register, UserAuth, UserInfo)
+from apps.user.models import Address, OAuthGithub, User
 from celery_tasks.tasks import async_send_email, sms_code
 from mall.bodys import Response
 from mall.conf import settings
-from mall.security import (
-    check_token,
-    check_token_http,
-    create_access_token,
-    get_password_hash,
-    verify_password,
-)
+from mall.security import (check_token, check_token_http, create_access_token,
+                           get_password_hash, verify_password)
 from mall.tools import img_code_redis, sms_code_redis
 
 mobile_regx = r"^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$"
@@ -61,7 +60,6 @@ async def sms_captcha(
 
 
 async def register(user: Register):
-
     # 验证同意协议
     if not user.allow:
         return Response(code=400, errmsg="请同意协议")
@@ -190,3 +188,135 @@ async def verify_email(token: str):
         if result:
             return Response()
     return Response(code=400, errmsg="账号有误,请联系管理员")
+
+
+async def create_address(
+    address: AddressCreate, user: User = Depends(check_token_http)
+):
+    """新增地址"""
+    if await Address.filter(user=user).count() > 20:
+        return Response(code=400, errmsg="超过地址数量上限")
+
+    # 2. 查 省
+    province = await Area.get_or_none(pk=address.province_id)
+    if province is None:
+        return Response(code=400, errmsg="省份不存在")
+    # 3. 查 市
+    city = await Area.get_or_none(Q(pk=address.city_id), Q(parent=province))
+    if city is None:
+        return Response(code=400, errmsg="市区不存在")
+
+    # 4. 查区
+    district = await Area.get_or_none(Q(pk=address.district_id))
+    if district is None:
+        return Response(code=400, errmsg="区县不存在")
+
+    del address.province_id
+    del address.city_id
+    del address.district_id
+
+    address_obj = await Address.create(
+        **address.dict(),
+        title=address.receiver,
+        user=user,
+        province=province,
+        city=city,
+        district=district,
+    )
+    # 默认地址
+    if isinstance(user.default_address, _NoneAwaitable):
+        await user.filter(default_address=None).update(default_address=address_obj)
+    return Response(
+        data={
+            **jsonable_encoder(address_obj),
+            "province": address_obj.province.name,
+            "city": address_obj.city.name,
+            "district": address_obj.district.name,
+        }
+    )
+
+
+async def address_list(user: User = Depends(check_token_http)):
+    """地址列表"""
+    address_arr = await Address.filter(user_id=user.pk, is_delete=False).all()
+    data = []
+    for address in address_arr:
+        province = await Area.get(pk=address.province_id)
+        city = await Area.get(pk=address.city_id)
+        district = await Area.get(pk=address.district_id)
+        item = {
+            **jsonable_encoder(address),
+            "province": province.name,
+            "city": city.name,
+            "district": district.name,
+        }
+        if user.default_address_id == address.pk:
+            data.insert(0, item)
+        else:
+            data.append(item)
+    return Response(data=data)
+
+
+async def update_address(
+    pk: int, address: AddressUpdate, user: User = Depends(check_token_http)
+):
+    """修改地址"""
+    if (obj := await Address.get_or_none(pk=pk)) is not None:
+        # 2. 查 省
+        province = await Area.get_or_none(pk=address.province_id)
+        if province is None:
+            return Response(code=400, errmsg="省份不存在")
+        # 3. 查 市
+        city = await Area.get_or_none(Q(pk=address.city_id), Q(parent=province))
+        if city is None:
+            return Response(code=400, errmsg="市区不存在")
+
+        # 4. 查区
+        district = await Area.get_or_none(Q(pk=address.district_id))
+        if district is None:
+            return Response(code=400, errmsg="区县不存在")
+
+        # 会返回更新数量
+        await obj.filter(id=pk).update(**address.dict())
+
+        return Response(
+            data={
+                **jsonable_encoder(address),
+                "province": province.name,
+                "city": city.name,
+                "district": district.name,
+            }
+        )
+    return Response(code=400, errmsg="更新地址失败")
+
+
+async def del_address(pk: int, user: User = Depends(check_token_http)):
+    """删除地址"""
+    obj = await Address.get_or_none(pk=pk)
+    if obj is not None:
+        obj.is_delete = True
+        await obj.save()
+        return Response()
+    return Response(code=400, errmsg="地址删除失败")
+
+
+async def default_address(pk: int, user: User = Depends(check_token_http)):
+    """设置默认地址"""
+    address = await Address.get_or_none(pk=pk)
+    if address is not None:
+        user.default_address = address
+        await user.save()
+        return Response()
+    return Response(code=400, errmsg="设置默认地址失败")
+
+
+async def update_title_address(
+    pk: int, title: AddressTitle, user: User = Depends(check_token_http)
+):
+    """设置地址标题"""
+    address = await Address.get_or_none(pk=pk)
+    if address is not None:
+        address.title = title.title
+        await address.save()
+        return Response()
+    return Response(code=400, errmsg="设置地址标题失败")
