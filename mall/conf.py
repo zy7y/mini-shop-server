@@ -108,6 +108,8 @@ class Settings(BaseSettings):
     APP_MODELS: Optional[List[str]] = [
         "apps.user.models",
         "apps.areas.models",
+        "apps.contents.models",
+        "apps.goods.models",
         "aerich.models",
     ]
 
