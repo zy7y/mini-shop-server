@@ -1,12 +1,13 @@
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
-from jose import jwt, JWTError
-from passlib.context import CryptContext
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jose import JWTError, jwt
+from passlib.context import CryptContext
 
 from apps.user.models import User
+
 from .conf import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -53,8 +54,7 @@ async def check_token(token: str) -> User:
     return await User.get_or_none(username=username)
 
 
-async def check_token_http(
-        token: HTTPAuthorizationCredentials = Depends(bearer)):
+async def check_token_http(token: HTTPAuthorizationCredentials = Depends(bearer)):
     credentials_exception = HTTPException(
         status_code=401,
         detail="认证失败",
