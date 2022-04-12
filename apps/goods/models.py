@@ -53,7 +53,7 @@ class SPU(BaseModel):
     desc_service = fields.TextField(default='', description='售后服务')
 
     class Meta:
-        db_table = 'm_spu'
+        table = 'm_spu'
 
 
 class SKU(BaseModel):
