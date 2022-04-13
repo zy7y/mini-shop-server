@@ -4,24 +4,12 @@ from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.routing import APIRoute
 
 from apps.user.bodys import AddressInfo, UserInfo
-from apps.user.views import (
-    address_list,
-    auth,
-    create_address,
-    default_address,
-    del_address,
-    github_auth,
-    github_auth_call,
-    image_captcha,
-    register,
-    sms_captcha,
-    update_address,
-    update_email,
-    update_password,
-    update_title_address,
-    user_info,
-    verify_email,
-)
+from apps.user.views import (address_list, auth, create_address,
+                             default_address, del_address, github_auth,
+                             github_auth_call, image_captcha, register,
+                             sms_captcha, update_address, update_email,
+                             update_password, update_title_address, user_info,
+                             verify_email)
 from mall.bodys import Response, Token
 
 urlpatterns = [
