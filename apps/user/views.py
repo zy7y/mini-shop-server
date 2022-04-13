@@ -7,15 +7,27 @@ from tortoise.expressions import Q
 from tortoise.fields.relational import _NoneAwaitable
 
 from apps.areas.models import Area
-from apps.user.bodys import (AddressCreate, AddressTitle, AddressUpdate,
-                             EmailBody, PasswordUpdate, Register, UserAuth,
-                             UserInfo)
+from apps.user.bodys import (
+    AddressCreate,
+    AddressTitle,
+    AddressUpdate,
+    EmailBody,
+    PasswordUpdate,
+    Register,
+    UserAuth,
+    UserInfo,
+)
 from apps.user.models import Address, OAuthGithub, User
 from celery_tasks.tasks import async_send_email, sms_code
 from mall.bodys import Response
 from mall.conf import settings
-from mall.security import (check_token, check_token_http, create_access_token,
-                           get_password_hash, verify_password)
+from mall.security import (
+    check_token,
+    check_token_http,
+    create_access_token,
+    get_password_hash,
+    verify_password,
+)
 from mall.tools import img_code_redis, sms_code_redis
 
 mobile_regx = r"^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$"
