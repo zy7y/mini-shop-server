@@ -36,5 +36,11 @@ services:
       - "15672:15672"
       - "5672:5672"
 
-
+  elasticsearch:
+    image: "elasticsearch:7.10.1"
+    restart: always
+    volumes:
+      - ./elasticsearch/config:/usr/share/elasticsearch/config
+    ports:
+      - "9200:9200"
 

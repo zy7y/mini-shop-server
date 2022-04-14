@@ -104,6 +104,9 @@ class Settings(BaseSettings):
             return f"""https://github.com/login/oauth/authorize?client_id={values.get("CLIENT_ID")}&redirect_uri={values.get("REDIRECT_URI")}"""
         return v
 
+    # Elasticsearch
+    ELASTICSEARCH_ADDRESS: str
+
     # 待迁移的 模型类
     APP_MODELS: Optional[List[str]] = [
         "apps.user.models",
