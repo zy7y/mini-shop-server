@@ -71,3 +71,27 @@ class GoodsList(BaseModel):
     count: int
     list: List[GoodsListInfo]
     breadcrumb: BreadCrumb
+
+class EsSearchInfo(BaseModel):
+    search_key: str
+    page_size: int
+    count: int
+
+
+class EsSearchData(BaseModel):
+    """ES 搜索返回模型"""
+    id: int
+    name: str
+    price: float
+    default_image: str
+
+    @validator("default_image")
+    def build_image_url(cls, v: str):
+        if v == "":
+            return v
+        return "https://49.232.203.244/" + v
+
+
+class EsSearch(BaseModel):
+    info: EsSearchInfo
+    goods: List[EsSearchData]

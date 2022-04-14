@@ -4,6 +4,7 @@ from tortoise import Tortoise
 from mall.conf import settings
 from mall.exceptions import exception_handlers
 from mall.urls import urlpatterns
+from apps.goods.search_es import to_es
 
 
 async def init():
@@ -20,6 +21,12 @@ app = FastAPI(
 """,
     exception_handlers=exception_handlers,
     routes=urlpatterns,
-    on_startup=[init],
+    on_startup=[init, to_es],
     on_shutdown=[Tortoise.close_connections],
 )
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run("main:app", reload=True)

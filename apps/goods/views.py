@@ -5,6 +5,7 @@ from fastapi import Query
 
 from apps.contents.models import Content, ContentCategory
 from apps.goods.models import SKU, GoodsCategory, GoodsChannel
+from apps.goods.search_es import MallIndex
 from mall.bodys import Response
 
 
@@ -111,3 +112,20 @@ async def hot_goods(category_id: int):
         .order_by("-sales")
         .limit(2)
     )
+
+
+async def search_goods(q: str = Query(..., description="查询sku名称 或者副标题的数据")):
+    """商品搜索"""
+    m = MallIndex("spu")
+    try:
+        total, resp = await m.query_es(q)
+        return Response(data={
+            "info": {
+                "count": total,
+                "page_size": len(resp),
+                "search_key": q
+            },
+            "goods": resp
+        })
+    except Exception as e:
+        return Response(code=400, errmsg=str(e))
