@@ -4,8 +4,9 @@ from fastapi.routing import APIRoute
 
 from apps.goods.bodys import (DetailGoods, EsSearch, GoodsIndex, GoodsList,
                               GoodsListInfo)
-from apps.goods.views import (detail_goods, goods_channel, goods_list,
-                              hot_goods, search_goods, visit_goods)
+from apps.goods.views import (detail_goods, get_history, goods_channel,
+                              goods_list, hot_goods, save_history,
+                              search_goods, visit_goods)
 from mall.bodys import Response
 
 urlpatterns = [
@@ -49,5 +50,21 @@ urlpatterns = [
         visit_goods,
         summary="统计分类商品访问量",
         tags=["商品"],
+        response_model=Response,
+    ),
+    APIRoute(
+        "/browse_histories",
+        save_history,
+        methods=["post"],
+        summary="保存访问记录",
+        tags=["商品"],
+        response_model=Response,
+    ),
+    APIRoute(
+        "/browse_histories",
+        get_history,
+        summary="查询访问记录",
+        tags=["商品"],
+        response_model=Response[List[GoodsListInfo]],
     ),
 ]

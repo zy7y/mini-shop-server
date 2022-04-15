@@ -1,13 +1,17 @@
 from collections import OrderedDict
 from typing import Any, Optional
 
-from fastapi import Query
+from fastapi import Depends, Query
 
 from apps.contents.models import Content, ContentCategory
+from apps.goods.bodys import SkuHistory
 from apps.goods.models import SKU, GoodsCategory, GoodsChannel
 from apps.goods.search_es import query_es
 from apps.goods.utils import find_breadcrumb, find_goods_category
+from apps.user.models import User
 from mall.bodys import Response
+from mall.security import check_token_http
+from mall.tools import history_redis
 
 
 async def goods_channel():
@@ -126,3 +130,32 @@ async def visit_goods(category_id: int):
     visit_obj.count += 1
     await visit_obj.save()
     return Response()
+
+
+# user: User = Depends[check_token_http]
+async def save_history(
+    history: SkuHistory,
+):
+    """保存用户浏览记录"""
+    user = await User.get(pk=1)
+    sku_id = history.sku_id
+    sku = await SKU.get_or_none(pk=sku_id)
+    if sku is None:
+        return Response(code=400, errmsg="SKU不存在")
+
+    redis_key = f"history_{user.pk}"
+
+    async with history_redis.pipeline(transaction=True) as pipe:
+        await pipe.lrem(redis_key, 0, sku_id).lpush(redis_key, sku_id).ltrim(
+            redis_key, 0, 4
+        ).execute()
+
+    return Response()
+
+
+async def get_history():
+    """查询用户浏览记录"""
+    user = await User.get(pk=1)
+    redis_key = f"history_{user.pk}"
+    sku_ids = await history_redis.lrange(redis_key, 0, -1)
+    return Response(data=[await SKU.get_or_none(pk=sku_id) for sku_id in sku_ids])

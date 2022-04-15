@@ -91,3 +91,7 @@ class DetailGoods(BaseModel):
     categories: Dict[str, Categories]
     breadcrumb: BreadCrumb
     sku: GoodsListInfo
+
+
+class SkuHistory(BaseModel):
+    sku_id: int
