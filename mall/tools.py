@@ -26,3 +26,6 @@ sms_code_redis = RedisManager.get(1)
 
 # 省市区使用的 redis
 area_redis = RedisManager.get(2)
+
+# 用户浏览记录 redis
+history_redis = RedisManager.get(3)
