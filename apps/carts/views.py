@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from fastapi import Depends
+from fastapi.encoders import jsonable_encoder
 
 from apps.carts.bodys import CartCreate
 from apps.goods.models import SKU
@@ -30,7 +31,11 @@ async def get_cart(user: User = Depends(check_token_http)):
     for sku_id, count in cart.items():
         sku = await SKU.get_or_none(pk=sku_id)
         data.append(
-            {**sku.__dict__, "count": count, "amount": sku.price * Decimal(count)}
+            {
+                **jsonable_encoder(sku),
+                "count": count,
+                "amount": sku.price * Decimal(count),
+            }
         )
     return Response(data=data)
 
@@ -48,15 +53,14 @@ async def put_cart(cart: CartCreate, user: User = Depends(check_token_http)):
 
     return Response(
         data={
-            **sku.__dict__,
+            **sku,
             "count": cart.count,
             "amount": sku.price * Decimal(cart.count),
         }
     )
 
 
-async def del_cart(sku_id: int):
-    user = await User.get(pk=1)
+async def del_cart(sku_id: int, user: User = Depends(check_token_http)):
     sku = await SKU.get_or_none(pk=sku_id)
     if sku is None:
         return Response(code=400, errmsg="商品不存在")
