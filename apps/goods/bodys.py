@@ -44,6 +44,16 @@ class GoodsIndex(BaseModel):
     categories: Dict[str, Categories]
 
 
+class BuildImage(BaseModel):
+    default_image: str
+
+    @validator("default_image")
+    def build_image_url(cls, v: str):
+        if v == "":
+            return v
+        return "https://49.232.203.244/" + v
+
+
 class BreadCrumb(BaseModel):
     """分页导航"""
 
@@ -52,19 +62,12 @@ class BreadCrumb(BaseModel):
     cat3: str
 
 
-class GoodsListInfo(BaseModel):
+class GoodsListInfo(BuildImage):
     """列表商品页"""
 
     id: int
-    default_image: str
     name: str
     price: float
-
-    @validator("default_image")
-    def build_image_url(cls, v: str):
-        if v == "":
-            return v
-        return "https://49.232.203.244/" + v
 
 
 class GoodsList(BaseModel):
@@ -72,26 +75,19 @@ class GoodsList(BaseModel):
     list: List[GoodsListInfo]
     breadcrumb: BreadCrumb
 
+
 class EsSearchInfo(BaseModel):
     search_key: str
     page_size: int
     count: int
 
 
-class EsSearchData(BaseModel):
-    """ES 搜索返回模型"""
-    id: int
-    name: str
-    price: float
-    default_image: str
-
-    @validator("default_image")
-    def build_image_url(cls, v: str):
-        if v == "":
-            return v
-        return "https://49.232.203.244/" + v
-
-
 class EsSearch(BaseModel):
     info: EsSearchInfo
-    goods: List[EsSearchData]
+    goods: List[GoodsListInfo]
+
+
+class DetailGoods(BaseModel):
+    categories: Dict[str, Categories]
+    breadcrumb: BreadCrumb
+    sku: GoodsListInfo

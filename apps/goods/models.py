@@ -156,3 +156,14 @@ class SKUSpecification(BaseModel):
     class Meta:
         table = "m_sku_specification"
         table_description = "SKU规格"
+
+
+class GoodsVisitCount(BaseModel):
+    """统计分类商品数量"""
+
+    category = fields.ForeignKeyField("models.GoodsCategory", on_delete=fields.CASCADE)
+    count = fields.IntField(description="访问量", default=0)
+    date = fields.DateField(auto_now_add=True, description="统计日期")
+
+    class Meta:
+        table = "m_goods_visit"
