@@ -13,18 +13,19 @@ async def to_es():
     for result in results:
         await client.index(index, body={
             **result.__dict__,
-            "category": await GoodsCategory.filter(pk=result.category_id).values("id", "name")[0],
-            "spu": await SPU.filter(pk=result.spu_id).values()[0]
+            "category": await GoodsCategory.filter(pk=result.category_id).values("id", "name"),
+            "spu": await SPU.filter(pk=result.spu_id).values()
         })
 
 
-async def query_es(query: str = "手机"):
+async def query_es(query: str, page: int, page_size: int):
     """查询"""
     body = {
+        "from": page_size / page, "size": page_size,
         "query": {
             "multi_match": {
                 "query": query,
-                "fields": ["name", "caption", "category", "spu"]
+                "fields": ["*", "_source"]
             }
         }
     }

@@ -1,11 +1,11 @@
 from collections import OrderedDict
-from typing import Optional
+from typing import Optional, Any
 
 from fastapi import Query
 
 from apps.contents.models import Content, ContentCategory
 from apps.goods.models import SKU, GoodsCategory, GoodsChannel
-from apps.goods.search_es import MallIndex
+from apps.goods.search_es import  query_es
 from mall.bodys import Response
 
 
@@ -114,11 +114,12 @@ async def hot_goods(category_id: int):
     )
 
 
-async def search_goods(q: str = Query(..., description="查询sku名称 或者副标题的数据")):
+async def search_goods(q: Any = Query(..., description="查询sku名称 或者副标题的数据"),
+                       page: int = Query(default=1, description="页数"),
+                       page_size: int = Query(default=5, description="条数")):
     """商品搜索"""
-    m = MallIndex("spu")
     try:
-        total, resp = await m.query_es(q)
+        total, resp = await query_es(q, page, page_size)
         return Response(data={
             "info": {
                 "count": total,
