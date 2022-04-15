@@ -132,12 +132,8 @@ async def visit_goods(category_id: int):
     return Response()
 
 
-# user: User = Depends[check_token_http]
-async def save_history(
-    history: SkuHistory,
-):
+async def save_history(history: SkuHistory, user: User = Depends(check_token_http)):
     """保存用户浏览记录"""
-    user = await User.get(pk=1)
     sku_id = history.sku_id
     sku = await SKU.get_or_none(pk=sku_id)
     if sku is None:
@@ -153,9 +149,8 @@ async def save_history(
     return Response()
 
 
-async def get_history():
+async def get_history(user: User = Depends(check_token_http)):
     """查询用户浏览记录"""
-    user = await User.get(pk=1)
     redis_key = f"history_{user.pk}"
     sku_ids = await history_redis.lrange(redis_key, 0, -1)
     return Response(data=[await SKU.get_or_none(pk=sku_id) for sku_id in sku_ids])

@@ -29,3 +29,6 @@ area_redis = RedisManager.get(2)
 
 # 用户浏览记录 redis
 history_redis = RedisManager.get(3)
+
+# 购物车 redis
+cart_redis = RedisManager.get(4)
