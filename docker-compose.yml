@@ -1,16 +1,16 @@
 version: "3.9"
 services:
  # fastdfs 默认80 端口访问可下载 需要在linux搭建
-#  fastdfs:
-#    image: qbanxiaoli/fastdfs
-#    restart: always
-#    container_name: fastdfs
-#    environment:
-#      # 需要更换成自己的服务器IP
-#      - IP=192.168.0.111
-#    volumes:
-#      - ./fastdfs:/var/local
-#    network_mode: host
+  fastdfs:
+    image: qbanxiaoli/fastdfs
+    restart: always
+    container_name: fastdfs
+    environment:
+      # 需要更换成自己的服务器IP
+      - IP=192.168.0.111
+    volumes:
+      - ./fastdfs:/var/local
+    network_mode: host
 
   mysql:
     image: "mysql:8.0.27"
@@ -20,8 +20,8 @@ services:
       TZ: Asia/Shanghai # 指定时区
     ports:
       - "3306:3306"
-    volumes:
-      - ./mysql8:/var/lib/mysql
+#    volumes:
+#      - ./mysql8:/var/lib/mysql
 
   redis:
     image: "redis:6.2.6-alpine3.15"
@@ -41,7 +41,7 @@ services:
     image: "elasticsearch:7.10.1"
     restart: always
     volumes:
-      - ./es/config:/usr/share/es/config
+      - ./elasticsearch/config:/usr/share/elasticsearch/config
     ports:
       - "9200:9200"
     environment:

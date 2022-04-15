@@ -113,6 +113,7 @@ class Settings(BaseSettings):
         "apps.areas.models",
         "apps.contents.models",
         "apps.goods.models",
+        "apps.orders.models"
     ]
 
     class Config:

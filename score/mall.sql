@@ -11,7 +11,7 @@
  Target Server Version : 80027
  File Encoding         : 65001
 
- Date: 13/04/2022 00:50:36
+ Date: 15/04/2022 21:56:30
 */
 
 SET NAMES utf8mb4;
@@ -45,7 +45,7 @@ CREATE TABLE `m_address`  (
   CONSTRAINT `fk_m_addres_m_areas_75073095` FOREIGN KEY (`province_id`) REFERENCES `m_areas` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_m_addres_m_areas_cd3f2731` FOREIGN KEY (`district_id`) REFERENCES `m_areas` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_m_addres_m_user_095a892c` FOREIGN KEY (`user_id`) REFERENCES `m_user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '收获地址' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '收获地址' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_address
@@ -72,7 +72,7 @@ CREATE TABLE `m_areas`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_m_areas_m_areas_3915ec05`(`parent_id`) USING BTREE,
   CONSTRAINT `fk_m_areas_m_areas_3915ec05` FOREIGN KEY (`parent_id`) REFERENCES `m_areas` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 820001 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 820000 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_areas
@@ -3317,7 +3317,7 @@ CREATE TABLE `m_brand`  (
   `logo` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'logo 图片链接',
   `first_letter` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '品牌首字母',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '品牌' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '品牌' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_brand
@@ -3336,7 +3336,7 @@ CREATE TABLE `m_channel_group`  (
   `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '频道组名',
   `is_delete` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '商品频道分组' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '商品频道分组' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_channel_group
@@ -3372,7 +3372,7 @@ CREATE TABLE `m_content`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_m_conten_m_conten_ca72576b`(`category_id`) USING BTREE,
   CONSTRAINT `fk_m_conten_m_conten_ca72576b` FOREIGN KEY (`category_id`) REFERENCES `m_content_category` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '广告内容' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 123 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '广告内容' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_content
@@ -3512,7 +3512,7 @@ CREATE TABLE `m_content_category`  (
   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '名称',
   `key` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '类别键名',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '广告分类' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '广告分类' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_content_category
@@ -4119,7 +4119,7 @@ CREATE TABLE `m_goods_channel`  (
   INDEX `fk_m_goods__m_channe_5f84461c`(`group_id`) USING BTREE,
   CONSTRAINT `fk_m_goods__m_channe_5f84461c` FOREIGN KEY (`group_id`) REFERENCES `m_channel_group` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_m_goods__m_goods__5ff0529f` FOREIGN KEY (`category_id`) REFERENCES `m_goods_category` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '商品频道' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 37 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '商品频道' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_goods_channel
@@ -4163,6 +4163,28 @@ INSERT INTO `m_goods_channel` VALUES (36, '2018-04-09 09:25:43.574584', '2018-04
 INSERT INTO `m_goods_channel` VALUES (37, '2018-04-09 09:26:00.332843', '2018-04-26 13:13:00.959857', 11, 'http://www.itcast.cn', 4, 37, 0);
 
 -- ----------------------------
+-- Table structure for m_goods_visit
+-- ----------------------------
+DROP TABLE IF EXISTS `m_goods_visit`;
+CREATE TABLE `m_goods_visit`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `category_id` int NULL DEFAULT NULL,
+  `count` int NULL DEFAULT 0,
+  `date` date NOT NULL,
+  `is_delete` tinyint(1) NULL DEFAULT 0,
+  `create_time` datetime NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `update_time` datetime NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `category`(`category_id`) USING BTREE,
+  CONSTRAINT `category` FOREIGN KEY (`category_id`) REFERENCES `m_goods_category` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of m_goods_visit
+-- ----------------------------
+INSERT INTO `m_goods_visit` VALUES (1, 1, 1, '2022-04-15', 0, '2022-04-15 02:57:30', '2022-04-15 02:57:30');
+
+-- ----------------------------
 -- Table structure for m_oauth_github
 -- ----------------------------
 DROP TABLE IF EXISTS `m_oauth_github`;
@@ -4177,11 +4199,74 @@ CREATE TABLE `m_oauth_github`  (
   INDEX `fk_m_oauth__m_user_f2fe8709`(`user_id`) USING BTREE,
   INDEX `idx_m_oauth_git_openid_3b0a7c`(`openid`) USING BTREE,
   CONSTRAINT `fk_m_oauth__m_user_f2fe8709` FOREIGN KEY (`user_id`) REFERENCES `m_user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_oauth_github
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for m_order_goods
+-- ----------------------------
+DROP TABLE IF EXISTS `m_order_goods`;
+CREATE TABLE `m_order_goods`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `order_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `sku_id` int NULL DEFAULT NULL,
+  `count` int NULL DEFAULT 1,
+  `price` decimal(10, 2) NULL DEFAULT NULL,
+  `comment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '',
+  `score` int NULL DEFAULT 5,
+  `is_anonymous` tinyint(1) NULL DEFAULT 0,
+  `is_commented` tinyint(1) NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `order`(`order_id`) USING BTREE,
+  INDEX `sku`(`sku_id`) USING BTREE,
+  CONSTRAINT `order` FOREIGN KEY (`order_id`) REFERENCES `m_order_info` (`order_id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `sku` FOREIGN KEY (`sku_id`) REFERENCES `m_sku` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of m_order_goods
+-- ----------------------------
+INSERT INTO `m_order_goods` VALUES (1, '20220415210710000000001', 1, 5, 11388.00, '', 5, 0, 0);
+INSERT INTO `m_order_goods` VALUES (2, '20220415210757000000001', 1, 5, 11388.00, '', 5, 0, 0);
+INSERT INTO `m_order_goods` VALUES (3, '20220415213703000000001', 1, 1, 11388.00, '', 5, 0, 0);
+
+-- ----------------------------
+-- Table structure for m_order_info
+-- ----------------------------
+DROP TABLE IF EXISTS `m_order_info`;
+CREATE TABLE `m_order_info`  (
+  `order_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `user_id` int NULL DEFAULT NULL,
+  `address_id` int NULL DEFAULT NULL,
+  `total_count` int NULL DEFAULT 1,
+  `freight` decimal(10, 2) NULL DEFAULT NULL,
+  `pay_method` int NOT NULL DEFAULT 1,
+  `status` int NOT NULL DEFAULT 1,
+  `total_amount` decimal(10, 2) NULL DEFAULT NULL,
+  PRIMARY KEY (`order_id`) USING BTREE,
+  INDEX `user`(`user_id`) USING BTREE,
+  INDEX `address`(`address_id`) USING BTREE,
+  INDEX `order_id`(`order_id`) USING BTREE,
+  CONSTRAINT `address` FOREIGN KEY (`address_id`) REFERENCES `m_address` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `user` FOREIGN KEY (`user_id`) REFERENCES `m_user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of m_order_info
+-- ----------------------------
+INSERT INTO `m_order_info` VALUES ('20220415141100000000001', 1, 1, 0, 10.00, 6, 2, 10.00);
+INSERT INTO `m_order_info` VALUES ('20220415141344000000001', 1, 1, 0, 10.00, 6, 2, 10.00);
+INSERT INTO `m_order_info` VALUES ('20220415205928000000001', 1, 1, 0, 10.00, 1, 2, 0.00);
+INSERT INTO `m_order_info` VALUES ('20220415210155000000001', 1, 1, 0, 10.00, 1, 2, 0.00);
+INSERT INTO `m_order_info` VALUES ('20220415210301000000001', 1, 1, 0, 10.00, 1, 2, 0.00);
+INSERT INTO `m_order_info` VALUES ('20220415210525000000001', 1, 1, 0, 10.00, 1, 2, 0.00);
+INSERT INTO `m_order_info` VALUES ('20220415210555000000001', 1, 1, 0, 10.00, 1, 2, 0.00);
+INSERT INTO `m_order_info` VALUES ('20220415210710000000001', 1, 1, 5, 10.00, 1, 2, 56950.00);
+INSERT INTO `m_order_info` VALUES ('20220415210757000000001', 1, 1, 5, 10.00, 1, 2, 56950.00);
+INSERT INTO `m_order_info` VALUES ('20220415213703000000001', 1, 1, 1, 10.00, 1, 2, 11398.00);
 
 -- ----------------------------
 -- Table structure for m_sku
@@ -4209,12 +4294,12 @@ CREATE TABLE `m_sku`  (
   INDEX `fk_m_sku_spu_9490dde6`(`spu_id`) USING BTREE,
   CONSTRAINT `fk_m_sku_m_goods__8b8fc325` FOREIGN KEY (`category_id`) REFERENCES `m_goods_category` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_m_sku_spu_9490dde6` FOREIGN KEY (`spu_id`) REFERENCES `m_spu` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_sku
 -- ----------------------------
-INSERT INTO `m_sku` VALUES (1, '2018-04-11 17:28:21.804713', '2018-04-25 11:09:04.532866', 'Apple MacBook Pro 13.3英寸笔记本 银色', '【全新2017款】MacBook Pro,一身才华，一触，即发 了解【黑五返场特惠】 更多产品请点击【美多官方Apple旗舰店】', 11388.00, 10350.00, 13388.00, 5, 5, 1, 1, 157, 1, 'group1/M00/00/02/CtM3BVrPB4GAWkTlAAGuN6wB9fU4220429', 0);
+INSERT INTO `m_sku` VALUES (1, '2018-04-11 17:28:21.804713', '2022-04-15 13:37:03.637889', 'Apple MacBook Pro 13.3英寸笔记本 银色', '【全新2017款】MacBook Pro,一身才华，一触，即发 了解【黑五返场特惠】 更多产品请点击【美多官方Apple旗舰店】', 11388.00, 10350.00, 13388.00, -21, 31, 1, 1, 157, 1, 'group1/M00/00/02/CtM3BVrPB4GAWkTlAAGuN6wB9fU4220429', 0);
 INSERT INTO `m_sku` VALUES (2, '2018-04-12 06:53:54.575306', '2018-04-23 11:44:03.825103', 'Apple MacBook Pro 13.3英寸笔记本 深灰色', '【全新2017款】MacBook Pro,一身才华，一触，即发 了解【黑五返场特惠】 更多产品请点击【美多官方Apple旗舰店】', 11398.00, 10388.00, 13398.00, 0, 1, 0, 1, 157, 1, 'group1/M00/00/02/CtM3BVrPCAOAIKRBAAGvaeRBMfc0463515', 0);
 INSERT INTO `m_sku` VALUES (3, '2018-04-14 02:14:04.599169', '2018-04-14 17:26:54.041015', 'Apple iPhone 8 Plus (A1864) 64GB 金色 移动联通电信4G手机', '选【移动优惠购】新机配新卡，198优质靓号，流量不限量！', 6499.00, 6300.00, 6598.00, 10, 0, 0, 1, 115, 2, 'group1/M00/00/02/CtM3BVrRZCqAUxp9AAFti6upbx41220032', 0);
 INSERT INTO `m_sku` VALUES (4, '2018-04-14 02:20:33.355996', '2018-04-14 17:27:12.736139', 'Apple iPhone 8 Plus (A1864) 256GB 金色 移动联通电信4G手机', '选【移动优惠购】新机配新卡，198优质靓号，流量不限量！', 7988.00, 7888.00, 8088.00, 8, 2, 0, 1, 115, 2, 'group1/M00/00/02/CtM3BVrRZa6ANO_sAAFti6upbx40753757', 0);
@@ -4245,7 +4330,7 @@ CREATE TABLE `m_sku_image`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_m_sku_im_m_sku_48f951af`(`sku_id`) USING BTREE,
   CONSTRAINT `fk_m_sku_im_m_sku_48f951af` FOREIGN KEY (`sku_id`) REFERENCES `m_sku` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'SKU图片' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 43 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'SKU图片' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_sku_image
@@ -4310,7 +4395,7 @@ CREATE TABLE `m_sku_specification`  (
   CONSTRAINT `fk_m_sku_sp_m_sku_d553cf4a` FOREIGN KEY (`sku_id`) REFERENCES `m_sku` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   CONSTRAINT `fk_m_sku_sp_m_specif_b6f589f6` FOREIGN KEY (`option_id`) REFERENCES `m_specification_option` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_m_sku_sp_m_spu_sp_a7826520` FOREIGN KEY (`spec_id`) REFERENCES `m_spu_specification` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'SKU规格' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 34 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'SKU规格' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_sku_specification
@@ -4364,7 +4449,7 @@ CREATE TABLE `m_specification_option`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_m_specif_m_spu_sp_fd50d594`(`spec_id`) USING BTREE,
   CONSTRAINT `fk_m_specif_m_spu_sp_fd50d594` FOREIGN KEY (`spec_id`) REFERENCES `m_spu_specification` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '规格选项' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 21 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '规格选项' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_specification_option
@@ -4416,7 +4501,7 @@ CREATE TABLE `m_spu`  (
   CONSTRAINT `fk_spu_m_goods__66f759d0` FOREIGN KEY (`category2_id`) REFERENCES `m_goods_category` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_spu_m_goods__94e2b8d4` FOREIGN KEY (`category3_id`) REFERENCES `m_goods_category` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_spu_m_goods__e9c5bd0c` FOREIGN KEY (`category1_id`) REFERENCES `m_goods_category` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '商品SPU' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '商品SPU' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_spu
@@ -4439,7 +4524,7 @@ CREATE TABLE `m_spu_specification`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fk_m_spu_sp_spu_f87362e6`(`spu_id`) USING BTREE,
   CONSTRAINT `fk_m_spu_sp_spu_f87362e6` FOREIGN KEY (`spu_id`) REFERENCES `m_spu` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '商品SPU规格' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '商品SPU规格' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of m_spu_specification
