@@ -107,13 +107,12 @@ class Settings(BaseSettings):
     # Elasticsearch
     ELASTICSEARCH_ADDRESS: str
 
-    # 待迁移的 模型类
+    # 模型类
     APP_MODELS: Optional[List[str]] = [
         "apps.user.models",
         "apps.areas.models",
         "apps.contents.models",
         "apps.goods.models",
-        "aerich.models",
     ]
 
     class Config:
@@ -121,18 +120,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings(_env_file=".development", _env_file_encoding="utf-8")
-
-
-# 迁移 aerich init -t mall.conf.TORTOISE_ORM
-# 初始化 aerich init-db
-# 迁移文件 aerich migrate --name drop_column
-# 修改表 aerich upgrade
-TORTOISE_ORM = {
-    "connections": {"default": settings.MYSQL_DATABASE_URL},
-    "apps": {
-        "models": {
-            "models": settings.APP_MODELS,
-            "default_connection": "default",
-        },
-    },
-}
