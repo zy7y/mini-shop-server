@@ -61,7 +61,9 @@ async def create_order(order: OrderBody, user: User = Depends(check_token_http))
 
                 new_stock = origin_stock - count
                 new_sales = origin_sales + count
-                result = await SKU.filter(pk=sku.pk, stock=origin_stock).update(stock=new_stock, sales=new_sales)
+                result = await SKU.filter(pk=sku.pk, stock=origin_stock).update(
+                    stock=new_stock, sales=new_sales
+                )
 
                 # 没修改数据
                 if result == 0:
@@ -69,7 +71,10 @@ async def create_order(order: OrderBody, user: User = Depends(check_token_http))
 
                 # 保存商品订单信息
                 await OrderGoods.create(
-                    order_id=order_info.order_id, sku_id=sku.pk, count=count, price=sku.price
+                    order_id=order_info.order_id,
+                    sku_id=sku.pk,
+                    count=count,
+                    price=sku.price,
                 )
 
                 order_info.total_count += count
