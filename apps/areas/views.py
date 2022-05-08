@@ -1,13 +1,15 @@
 import json
+from typing import List
 
 from fastapi.encoders import jsonable_encoder
 
+from apps.areas.bodys import AreaProvince, AreasInfo
 from apps.areas.models import Area
 from mall.bodys import Response
 from mall.tools import area_redis
 
 
-async def get_provinces():
+async def get_provinces() -> Response[List[AreaProvince]]:
     """获取省市区数据"""
     # 缓存中取
     if (provinces := await area_redis.get("provinces")) is not None:
@@ -22,7 +24,7 @@ async def get_provinces():
     return Response(data=provinces)
 
 
-async def get_sub_areas(pk: int):
+async def get_sub_areas(pk: int) -> Response[AreasInfo]:
     """查询市，或者区数据
     :params pk: 市 / 区 ID， int类型
     """
