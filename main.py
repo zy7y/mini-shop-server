@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, applications
 from tortoise import Tortoise
 
 from apps.goods.search_es import to_es
@@ -6,6 +6,20 @@ from mall.conf import settings
 from mall.exceptions import exception_handlers
 from mall.urls import urlpatterns
 
+# https://github.com/tiangolo/fastapi/issues/4924
+def swagger_monkey_patch(*args, **kwargs):
+    """
+    Wrap the function which is generating the HTML for the /docs endpoint and
+    overwrite the default values for the swagger js and css.
+    """
+    return get_swagger_ui_html(
+        *args, **kwargs,
+        swagger_js_url="https://cdn.bootcdn.net/ajax/libs/swagger-ui/4.10.3/swagger-ui-bundle.js",
+        swagger_css_url="https://cdn.bootcdn.net/ajax/libs/swagger-ui/4.10.3/swagger-ui.css")
+
+
+# Actual monkey patch
+applications.get_swagger_ui_html = swagger_monkey_patch
 
 async def init():
     await Tortoise.init(
