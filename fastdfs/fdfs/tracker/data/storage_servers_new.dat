@@ -1,0 +1,59 @@
+# storage 192.168.58.108:23000
+[Storage001]
+	group_name=group1
+	ip_addr=192.168.58.108
+	status=6
+	version=5.12
+	join_time=1672818954
+	storage_port=23000
+	storage_http_port=80
+	domain_name=
+	sync_src_server=
+	sync_until_timestamp=0
+	store_path_count=1
+	subdir_count_per_path=256
+	upload_priority=10
+	total_mb=0
+	free_mb=0
+	total_upload_count=0
+	success_upload_count=0
+	total_append_count=0
+	success_append_count=0
+	total_set_meta_count=0
+	success_set_meta_count=0
+	total_delete_count=0
+	success_delete_count=0
+	total_download_count=0
+	success_download_count=0
+	total_get_meta_count=0
+	success_get_meta_count=0
+	total_create_link_count=0
+	success_create_link_count=0
+	total_delete_link_count=0
+	success_delete_link_count=0
+	total_upload_bytes=0
+	success_upload_bytes=0
+	total_append_bytes=0
+	success_append_bytes=0
+	total_download_bytes=0
+	success_download_bytes=0
+	total_sync_in_bytes=0
+	success_sync_in_bytes=0
+	total_sync_out_bytes=0
+	success_sync_out_bytes=0
+	total_file_open_count=0
+	success_file_open_count=0
+	total_file_read_count=0
+	success_file_read_count=0
+	total_file_write_count=0
+	success_file_write_count=0
+	last_source_update=0
+	last_sync_update=0
+	last_synced_timestamp=0
+	last_heart_beat_time=0
+	changelog_offset=0
+
+
+# global section
+[Global]
+	storage_count=1

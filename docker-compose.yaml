@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+ # fastdfs 默认80 端口访问可下载 需要在linux搭建
+  fastdfs:
+    image: qbanxiaoli/fastdfs
+    restart: always
+    container_name: fastdfs
+    environment:
+      # 需要更换成自己的服务器IP
+      - IP=192.168.58.108
+    volumes:
+      - ./fastdfs:/var/local
+    network_mode: host

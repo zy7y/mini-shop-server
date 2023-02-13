@@ -1,10 +1,9 @@
-
-from ninja import Router, Path, Query
+from ninja import Path, Query, Router
 
 from apps.address.models import Address
 from apps.address.schemas import AddressSchema
-from apps.schemas import R, PageResult, PageParams
-from views import pagination
+from apps.schemas import PageParams, PageResult, R
+from apps.views import pagination
 
 # Create your views here.
 router = Router(tags=["地址管理"])
@@ -13,7 +12,9 @@ router = Router(tags=["地址管理"])
 @router.post("", summary="添加地址", response=R[AddressSchema])
 def create(request, data: AddressSchema):
     if data.is_deault:
-        Address.objects.filter(member=request.user, is_default=True).update(is_default=False)
+        Address.objects.filter(member=request.user, is_default=True).update(
+            is_default=False
+        )
     address = Address.objects.create(**data.dict(), member=request.user)
     return R.ok(address)
 

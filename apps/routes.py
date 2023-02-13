@@ -12,4 +12,9 @@ from apps.member.views import router
 api.add_router("/member", router)
 
 from apps.address.views import router
+
 api.add_router("/address", router, auth=AuthBearer())
+
+from apps.banner.views import router
+
+api.add_router("/banner", router)

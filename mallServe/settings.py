@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.member',
-    'apps.address'
+    'apps.address',
+    'apps.banner',
+    'apps.good',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +84,7 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': '123456',  # 数据库用户密码
-        'NAME': 'mall'  # 数据库名字
+        'NAME': 'mall',  # 数据库名字
     }
 }
 
@@ -138,9 +140,7 @@ LOGGING = {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(lineno)d %(message)s'
         },
-        'simple': {
-            'format': '%(levelname)s %(module)s %(lineno)d %(message)s'
-        },
+        'simple': {'format': '%(levelname)s %(module)s %(lineno)d %(message)s'},
     },
     'filters': {  # 对日志进行过滤
         'require_debug_true': {  # django在debug模式下才输出日志
@@ -152,7 +152,7 @@ LOGGING = {
             'level': 'INFO',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'simple',
         },
         # 'file': {  # 向文件中输出日志
         #     'level': 'INFO',
@@ -169,7 +169,7 @@ LOGGING = {
             'propagate': True,  # 是否继续传递日志信息
             'level': 'INFO',  # 日志器接收的最低日志级别
         },
-    }
+    },
 }
 
 # Redis配置
@@ -179,6 +179,19 @@ CACHES = {
         "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+        },
     }
 }
+
+# FastDFS
+FASTDFS = {
+    "host_tuple": ("192.168.58.108",),
+    "port": 22122,
+    "timeout": 30,
+    "name": "Tracker Pool",
+}
+
+# 配置本地文件上传
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
+# MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_URL = '/media/'

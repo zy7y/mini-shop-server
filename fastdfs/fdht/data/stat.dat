@@ -1,0 +1,8 @@
+total_set_count=0
+success_set_count=0
+total_get_count=0
+success_get_count=0
+total_inc_count=0
+success_inc_count=0
+total_delete_count=0
+success_delete_count=0

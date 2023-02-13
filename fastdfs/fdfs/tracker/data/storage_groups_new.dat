@@ -1,0 +1,14 @@
+# global section
+[Global]
+	group_count=1
+
+# group: group1
+[Group001]
+	group_name=group1
+	storage_port=23000
+	storage_http_port=80
+	store_path_count=1
+	subdir_count_per_path=256
+	current_trunk_file_id=0
+	trunk_server=
+	last_trunk_server=
